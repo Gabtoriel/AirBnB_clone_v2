@@ -12,9 +12,10 @@ DIRSTATS="created the following directories:\n\
 $PARENT\n$DIR1\n$DIR2\n$DIR3\n$DIR4"
 SERVER=nginx
 
-if ! "$SERVER" -v; then
+if [ "$($SERVER -v)" ]; then
     echo "nginx is being installed"
-    if ! sudo apt-get update && sudo apt-get install -y "$SERVER"; then
+    stats=$(sudo apt-get update; sudo apt-get intstall nginx -y) 
+    if [ $stats -ne 0 ]; then
         echo "nginx has failed to install."
 	exit 1
     else
