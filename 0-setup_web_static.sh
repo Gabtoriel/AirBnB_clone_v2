@@ -96,7 +96,7 @@ else
 fi
 
 # makes the file owner the ubuntu
-if [ "$(chown -R viclins_t: $PARENT)" ]; then
+if [ "$(chown -R ubuntu: $PARENT)" ]; then
     echo -e "Failed to make the $USER user owner of the directory and \
 files in $PARENT"
 fi 
