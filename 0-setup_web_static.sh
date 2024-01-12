@@ -14,7 +14,7 @@ SERVER=nginx
 
 if ! "$SERVER" -v; then
     echo "nginx is being installed"
-    if ! $(sudo apt-get update && sudo apt-get install -y $SERVER); then
+    if ! sudo apt-get update && sudo apt-get install -y "$SERVER"; then
         echo "nginx has failed to install."
 	exit 1
     else
