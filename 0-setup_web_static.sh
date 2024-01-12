@@ -10,16 +10,11 @@ SYMLINK=/data/web_static/current
 TESTFILE=/data/web_static/releases/test/index.html
 DIRSTATS="created the following directories:\n\
 $PARENT\n$DIR1\n$DIR2\n$DIR3\n$DIR4"
-
 SERVER=nginx
 
-$SERVER -v 2> /dev/null
-
-if [ $? -ne 0 ]; then
-    sudo apt-get update
-    sudo apt-get install -y $SERVER
-    echo "nginx is been installed."
-    if [ $? -ne 0 ]; then
+if [ "$($SERVER -v)" ]; then
+    echo "nginx is being installed"
+    if [ "$(sudo apt-get update && sudo apt-get install -y $SERVER)" ]; then
         echo "nginx has failed to install."
 	exit 1
     else
@@ -30,16 +25,16 @@ else
 fi
 
 mkdir -p $PARENT
-if [ -d $PARENT ]; then
+if [ -d "$PARENT" ]; then
     mkdir -p $DIR1
-    if [ -d $DIR1 ]; then
+    if [ -d "$DIR1" ]; then
         mkdir -p $DIR2
-        if [ -d $DIR2 ]; then
+        if [ -d "$DIR2" ]; then
             mkdir -p $DIR3
-            if [ -d $DIR3 ]; then
+            if [ -d "$DIR3" ]; then
                 mkdir -p $DIR4
-                if [ -d $DIR4 ]; then
-                        echo -e $DIRSTATS
+                if [ -d "$DIR4" ]; then
+                        echo -e "$DIRSTATS"
                 else
                     echo "failed to create the directory $DIR4"
                     exit 1
@@ -61,17 +56,15 @@ else
     exit 1
 fi
 
-if [ -e $TESTFILE ]; then
+if [ -e "$TESTFILE" ]; then
     rm $TESTFILE
-    touch $TESTFILE
-    if [ $? -ne 0 ]; then
+    if [ "$(touch $TESTFILE)" ]; then
         echo "failed to create $TESTFILE."
     else
         echo "created $TESTFILE."
     fi
 else
-    touch $TESTFILE
-    if [ $? -ne 0 ]; then
+    if [ "$(touch $TESTFILE)" ]; then
         echo "Failed to create $TESTFILE."
     else
         echo "Created $TESTFILE."
@@ -87,26 +80,22 @@ cat << _EOF_ > $TESTFILE
   </body>
 </html>
 _EOF_
-if [ $? -ne 0 ]; then
-    echo "Failed to input text."
-fi
 
 # creates a sym link between symlink to dir4
-if [ -L $SYMLINK ]; then
-    ln -sf $DIR4 $SYMLINK
-    if [ $? -ne 0 ]; then
+
+if [ -L "$SYMLINK" ]; then
+    rm $SYMLINK
+    if [ "$(ln -sf $DIR4 $SYMLINK)" ]; then
         echo "failed to create the sym link between $SYMLINK and $DIR4"
     fi
-else 
-    ln -sf $DIR4 $SYMLINK
-    if [ $? -ne 0 ]; then
+else
+    if [ "$(ln -sf $DIR4 $SYMLINK)" ]; then
         echo "failed to create the sym link between $SYMLINK and $DIR4"
     fi
 fi
 
 # makes the file owner the ubuntu
-chown -R ubuntu: $PARENT
-if [ $? -ne 0 ]; then
+if [ "$(chown -R ubuntu: $PARENT)" ]; then
     echo -e "Failed to make the $USER user owner of the directory and \
 files in $PARENT"
 fi 
