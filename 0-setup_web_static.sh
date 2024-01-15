@@ -12,10 +12,9 @@ DIRSTATS="created the following directories:\n\
 $PARENT\n$DIR1\n$DIR2\n$DIR3\n$DIR4"
 SERVER=nginx
 
-if [ "$($SERVER -v)" ]; then
+if ! $SERVER -v; then
     echo "nginx is being installed"
-    stats=$(sudo apt-get update; sudo apt-get intstall nginx -y) 
-    if [ $stats -ne 0 ]; then
+    if ! sudo apt-get update && sudo apt-get install nginx -y; then
         echo "nginx has failed to install."
 	exit 1
     else
@@ -65,7 +64,7 @@ if [ -e "$TESTFILE" ]; then
         echo "created $TESTFILE."
     fi
 else
-    if [ "$(touch $TESTFILE)" ]; then
+    if ! touch $TESTFILE; then
         echo "Failed to create $TESTFILE."
     else
         echo "Created $TESTFILE."
@@ -86,17 +85,17 @@ _EOF_
 
 if [ -L "$SYMLINK" ]; then
     rm $SYMLINK
-    if [ "$(ln -sf $DIR4 $SYMLINK)" ]; then
+    if ! ln -sf $DIR4 $SYMLINK; then
         echo "failed to create the sym link between $SYMLINK and $DIR4"
     fi
 else
-    if [ "$(ln -sf $DIR4 $SYMLINK)" ]; then
+    if ! ln -sf $DIR4 $SYMLINK; then
         echo "failed to create the sym link between $SYMLINK and $DIR4"
     fi
 fi
 
 # makes the file owner the ubuntu
-if [ "$(chown -R ubuntu: $PARENT)" ]; then
+if ! chown -R ubuntu: $PARENT; then
     echo -e "Failed to make the $USER user owner of the directory and \
 files in $PARENT"
 fi 
