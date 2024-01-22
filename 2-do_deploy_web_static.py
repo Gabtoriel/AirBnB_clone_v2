@@ -17,7 +17,7 @@ def do_deploy(archive_path):
 
     tmp_archive_name = archive_path[9:]  # archive name with .tgz
     archive_name = tmp_archive_name[:-4]  # archive name without .tgz
-    tmp_archive_dir = '/tmp/{}'.format(tmp_archive_name)  # temporary directory where archive is kept
+    tmp_archive_dir = '/tmp/{}'.format(tmp_archive_name)
     remote_archive_dir = '/data/web_static/releases/{}/'.format(archive_name)
     SYMLINK = '/data/web_static/current'
 
@@ -29,11 +29,12 @@ def do_deploy(archive_path):
         run('mkdir -p {}'.format(remote_archive_dir))
         run('tar -xzf {} -C {}'.format(tmp_archive_dir, remote_archive_dir))
         run('rm {}'.format(tmp_archive_dir))
-        run('mv {}web_static/* {}'.format(remote_archive_dir, remote_archive_dir))
+        run('mv {}web_static/* {}'.format(remote_archive_dir,
+                                          remote_archive_dir))
         run('rm -rf {}web_static/'.format(remote_archive_dir))
-        run('rm {}'.format(SYMLINK))
+        run('rm -rf {}'.format(SYMLINK))
         run('ln -s {} {}'.format(remote_archive_dir, SYMLINK))
         print("New version deployed!")
         return True
-    except:
+    except Exception as e:
         return False

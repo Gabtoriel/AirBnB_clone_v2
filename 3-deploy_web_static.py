@@ -16,6 +16,7 @@ def do_pack():
 
     """Creates and stores the archive of a directory."""
 
+    global archive
     date_time = datetime.now().strftime('%Y%m%d%H%M%S')
     archive = "versions/web_static_{}.tgz".format(date_time)
     local('mkdir -p versions')
@@ -27,6 +28,7 @@ def do_pack():
     else:
         file_size = os.path.getsize(archive)
         print("web_static packed: {} -> {}Bytes".format(archive, file_size))
+        return True
 
 
 def do_deploy(archive_path):
@@ -50,11 +52,11 @@ def do_deploy(archive_path):
         run('mv {}web_static/* {}'.format(remote_archive_dir,
                                           remote_archive_dir))
         run('rm -rf {}web_static/'.format(remote_archive_dir))
-        run('rm {}'.format(SYMLINK))
+        run('rm -rf {}'.format(SYMLINK))
         run('ln -s {} {}'.format(remote_archive_dir, SYMLINK))
         print("New version deployed!")
         return True
-    except:
+    except Exception as e:
         return False
 
 
@@ -62,9 +64,9 @@ def deploy():
 
     """Controls the creating and deploying of the archive to the server."""
 
-    result = do_pack()
-    if result is None:
+    result_pack = do_pack()
+    if result_pack is None:
         return False
-
-    result = do_deploy(archive)
-    return result
+    else:
+        result_deploy = do_deploy(archive)
+        return result_deploy
