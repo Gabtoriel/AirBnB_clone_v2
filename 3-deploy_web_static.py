@@ -8,10 +8,10 @@ from datetime import datetime
 import os
 
 
-env.hosts = ['ubuntu@54.160.104.92', 'ubuntu@52.23.212.44']
 archive = ''
 
 
+@task
 def do_pack():
 
     """Creates and stores the archive of a directory."""
@@ -31,6 +31,7 @@ def do_pack():
         return True
 
 
+@hosts('ubuntu@54.160.104.92', 'ubuntu@52.23.212.44')
 def do_deploy(archive_path):
 
     """deploys the web_static files on the server."""
@@ -60,6 +61,8 @@ def do_deploy(archive_path):
         return False
 
 
+@task
+@runs_once
 def deploy():
 
     """Controls the creating and deploying of the archive to the server."""
@@ -68,5 +71,5 @@ def deploy():
     if result_pack is None:
         return False
     else:
-        result_deploy = do_deploy(archive)
+        result_deploy = execute(do_deploy, archive)
         return result_deploy
